@@ -3,11 +3,23 @@ from bs4 import BeautifulSoup
 import pandas as pd
 
 # Define the questions
-questions = [
-    "Ensure multi-factor authentication (MFA) is enabled for all IAM users that have a console password",
-    "Ensure console credentials unused for 90 days or greater are disabled",
-    # Add other questions here
-]
+#questions = [
+#    "Ensure multi-factor authentication (MFA) is enabled for all IAM users that have a console password",
+#    "Ensure console credentials unused for 90 days or greater are disabled",
+#    # Add other questions here
+#]
+
+import pandas as pd
+
+# Path to the Excel file containing the questions
+xlsx_file_path = 'Astolfo/CloudControls.xlsx'
+
+# Read the questions from the Excel file
+questions_df = pd.read_excel(xlsx_file_path)
+
+# Extract the questions from the specific column (replace 'Your Column Name' with the actual column name)
+questions = questions_df['CONTROL NAME'].tolist()
+ 
 
 # Define the URLs for compliance requirements
 urls = {
