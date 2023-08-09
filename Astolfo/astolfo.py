@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import PyPDF2
+import re
 
 # Define the questions
 #questions = [
@@ -8,8 +10,6 @@ import pandas as pd
 #    "Ensure console credentials unused for 90 days or greater are disabled",
 #    # Add other questions here
 #]
-
-import pandas as pd
 
 # Path to the Excel file containing the questions
 xlsx_file_path = 'Astolfo/CloudControls.xlsx'
