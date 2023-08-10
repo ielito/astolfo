@@ -14,71 +14,46 @@ with open('Astolfo/edital.pdf', 'rb') as file:
     # Split the text into lines
     lines = text.split('\n')
 
-    # Define a pattern to match item numbers and context, including sub-numbering
-    pattern = re.compile(r'(\d+(\.\d+)*)\.\s+(.*)')
+    # Create an Excel writer object
+    with pd.ExcelWriter('output.xlsx') as writer:
+        # DataFrame to store the current section
+        df = pd.DataFrame(columns=['Item Number', 'Context'])
 
- # Create an Excel writer object
-with pd.ExcelWriter('output.xlsx') as writer:  # Use 'with' statement
-    # DataFrame to store the current section
-    df = pd.DataFrame(columns=['Item Number', 'Context'])
+        # Sheet name for the current section
+        sheet_name = 'Main'
 
-    # Sheet name for the current section
-    sheet_name = 'Main'
+        # Temporary variable to store context
+        context = ''
 
-    # Iterate through the lines and extract item numbers and context
-    for line in lines:
-        # Check if the line starts a new section
-        if "ANEXOS AO EDITAL" in line:
-            # Save the current section to a sheet
-            df.to_excel(writer, sheet_name=sheet_name, index=False)
+        # Iterate through the lines and extract item numbers and context
+        for line in lines:
+            # Check if the line starts a new section
+            if any(keyword in line for keyword in ["ANEXOS AO EDITAL", "APÊNDICE DO ANEXO",
+                                                   "ANEXO II - REMUNERAÇÃO BASEADA EM SPRINTS EM METODOLOGIA ÁGIL",
+                                                   "ANEXO III - INFORMAÇÕES PARA DIMENSIONAMENTO DE INFRAESTRUTURA",
+                                                   "ANEXO IV - PROCESSO DE AMOSTRA DA FERRAMENTA"]):
+                # Save the current section to a sheet
+                if not df.empty:
+                    df.to_excel(writer, sheet_name=sheet_name, index=False)
 
-            # Start a new DataFrame for the new section
-            df = pd.DataFrame(columns=['Item Number', 'Context'])
+                # Start a new DataFrame for the new section
+                df = pd.DataFrame(columns=['Item Number', 'Context'])
 
-            # Set the sheet name for the new section (e.g., "ANEXO I - TERMO DE REFERÊNCIA")
-            sheet_name = line.strip()
-        if "APÊNDICE DO ANEXO" in line:
-            # Save the current section to a sheet
-            df.to_excel(writer, sheet_name=sheet_name, index=False)
+                # Set the sheet name for the new section
+                sheet_name = line.strip()[:31]  # Limit to 31 characters for Excel
 
-            # Start a new DataFrame for the new section
-            df = pd.DataFrame(columns=['Item Number', 'Context'])
+            # Match item numbers and context
+            match = re.match(r'(\d+(\.\d+)*)\.\s+(.*)', line)
+            if match:
+                item_number, _, new_context = match.groups()
+                if context:
+                    df.loc[len(df)] = [item_number, context]
+                context = new_context
+            else:
+                context += ' ' + line
 
-            # Set the sheet name for the new section (e.g., "ANEXO I - TERMO DE REFERÊNCIA")
-            sheet_name = line.strip()
-        if "ANEXO II - REMUNERAÇÃO BASEADA EM SPRINTS EM METODOLOGIA ÁGIL" in line:
-            # Save the current section to a sheet
-            df.to_excel(writer, sheet_name=sheet_name, index=False)
-
-            # Start a new DataFrame for the new section
-            df = pd.DataFrame(columns=['Item Number', 'Context'])
-
-            # Set the sheet name for the new section (e.g., "ANEXO I - TERMO DE REFERÊNCIA")
-            sheet_name = line.strip()
-        if "ANEXO III - INFORMAÇÕES PARA DIMENSIONAMENTO DE INFRAESTRUTURA" in line:
-            # Save the current section to a sheet
-            df.to_excel(writer, sheet_name=sheet_name, index=False)
-
-            # Start a new DataFrame for the new section
-            df = pd.DataFrame(columns=['Item Number', 'Context'])
-
-            # Set the sheet name for the new section (e.g., "ANEXO I - TERMO DE REFERÊNCIA")
-            sheet_name = line.strip()
-        if "ANEXO IV - PROCESSO DE AMOSTRA DA FERRAMENTA" in line:
-            # Save the current section to a sheet
-            df.to_excel(writer, sheet_name=sheet_name, index=False)
-
-            # Start a new DataFrame for the new section
-            df = pd.DataFrame(columns=['Item Number', 'Context'])
-
-            # Set the sheet name for the new section (e.g., "ANEXO I - TERMO DE REFERÊNCIA")
-            sheet_name = line.strip()
-
-        # Match item numbers and context
-        match = pattern.match(line)
-        if match:
-            item_number, _, context = match.groups()
+        # Save the last section to a sheet
+        if context:
             df.loc[len(df)] = [item_number, context]
-
-    # Save the last section to a sheet
-    df.to_excel(writer, sheet_name=sheet_name, index=False)
+        if not df.empty:
+            df.to_excel(writer, sheet_name=sheet_name, index=False)

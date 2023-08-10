@@ -27,6 +27,7 @@ urls = {
     "SOC2": "https://www.logicmanager.com/resources/compliance-management/download-soc-2-compliance-checklist/",
     "HIPAA": "https://www.hipaajournal.com/hipaa-compliance-software/",
     "PCI-DSS": "https://docs.cgn.portal.checkpoint.com/docs/d9_aws_iam_08",
+    "CSPM": "https://gsl.dome9.com/",
     # Add other URLs here
 }
 
