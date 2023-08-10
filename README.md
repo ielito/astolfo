@@ -75,7 +75,7 @@ The main part of the code is as follows:
 If you would like to contribute to this project, please feel free to fork the repository, create a feature branch, and submit a pull request.
 
 Special thanks to:
-- @cpmoura
+- https://github.com/cccpmoura
 - Arnold
 - Codexius Maximus
 
